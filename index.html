@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#5A2348" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Closet Colour" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>Closet Colour</title>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">YOUR WARDROBE</div>
+        <h1>Closet Colour</h1>
+      </div>
+      <button class="icon-button" id="installBtn" hidden aria-label="Install app">＋</button>
+    </header>
+
+    <main>
+      <section class="view active" id="homeView">
+        <div class="hero card">
+          <div>
+            <span class="pill">Your colour profile</span>
+            <h2>Cool, clear colours with some depth</h2>
+            <p>Rich cool shades tend to give your complexion more definition. Warm yellow-based neutrals are more likely to soften or dull it.</p>
+          </div>
+          <div class="hero-swatch"></div>
+        </div>
+
+        <section class="section-block">
+          <div class="section-head">
+            <h3>Your strongest colours</h3>
+            <button class="text-button" data-go="profileView">See all</button>
+          </div>
+          <div class="swatch-grid" id="bestSwatches"></div>
+        </section>
+
+        <section class="section-block">
+          <div class="callout card">
+            <div class="callout-icon">◎</div>
+            <div>
+              <strong>Quick reminder in the fitting room</strong>
+              <p>Wine, berry, plum, cobalt, navy, cool teal, emerald and charcoal are reliable. Cream is wearable, but soft white or oyster is usually better.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section-block">
+          <div class="section-head">
+            <h3>Wardrobe snapshot</h3>
+            <button class="text-button" data-go="wardrobeView">Open wardrobe</button>
+          </div>
+          <div class="stats-grid">
+            <div class="stat card"><span id="itemCount">0</span><small>items</small></div>
+            <div class="stat card"><span id="favCount">0</span><small>favourites</small></div>
+            <div class="stat card"><span id="colourCount">0</span><small>colour families</small></div>
+          </div>
+        </section>
+      </section>
+
+      <section class="view" id="wardrobeView">
+        <div class="section-head sticky-title">
+          <div>
+            <div class="eyebrow">MY CLOTHES</div>
+            <h2>Wardrobe</h2>
+          </div>
+          <button class="primary small" id="addItemBtn">＋ Add</button>
+        </div>
+
+        <div class="filter-row">
+          <input id="wardrobeSearch" type="search" placeholder="Search clothes…" />
+          <select id="categoryFilter">
+            <option value="">All categories</option>
+            <option>Tops</option><option>Shirts</option><option>Knitwear</option><option>Jackets</option>
+            <option>Dresses</option><option>Pants</option><option>Skirts</option><option>Shoes</option>
+            <option>Accessories</option><option>Other</option>
+          </select>
+        </div>
+
+        <div id="emptyWardrobe" class="empty card">
+          <div class="empty-icon">◌</div>
+          <h3>Your wardrobe is empty</h3>
+          <p>Add a few pieces, including a photo and colour family. Everything stays on this device.</p>
+          <button class="primary" id="emptyAddBtn">Add first item</button>
+        </div>
+        <div class="wardrobe-grid" id="wardrobeGrid"></div>
+      </section>
+
+      <section class="view" id="shopView">
+        <div class="eyebrow">IN THE FITTING ROOM</div>
+        <h2>Shop Check</h2>
+        <p class="lede">Take a quick photo of the garment or choose its colour. The result is a guide, not a substitute for seeing it against your face in natural light.</p>
+
+        <div class="card shop-card">
+          <h3>Check a garment photo</h3>
+          <label class="upload-box">
+            <input id="shopPhoto" type="file" accept="image/*" capture="environment" />
+            <span class="upload-icon">＋</span>
+            <strong>Take or choose photo</strong>
+            <small>Best results: fill the centre of the photo with the fabric.</small>
+          </label>
+          <canvas id="colourCanvas" width="80" height="80" hidden></canvas>
+          <div id="photoResult" class="result-box" hidden></div>
+        </div>
+
+        <div class="card shop-card">
+          <h3>Or choose the colour manually</h3>
+          <div class="manual-colour-row">
+            <input id="manualColour" type="color" value="#7A294E" aria-label="Choose garment colour" />
+            <button class="primary" id="manualCheckBtn">Check colour</button>
+          </div>
+          <div id="manualResult" class="result-box" hidden></div>
+        </div>
+
+        <div class="card shop-card compact">
+          <h3>Fast rule</h3>
+          <p><strong>If it looks blue-based, berry-based or jewel-toned:</strong> usually promising.<br>
+          <strong>If it looks yellow, orange, camel or peach-based:</strong> be more cautious.</p>
+        </div>
+      </section>
+
+      <section class="view" id="profileView">
+        <div class="eyebrow">YOUR REFERENCE</div>
+        <h2>Colour profile</h2>
+        <p class="lede">A practical shopping palette based on the colours that have looked strongest in your photos.</p>
+
+        <div class="profile-group">
+          <div class="profile-heading"><span class="dot strong-dot"></span><h3>Strongest</h3></div>
+          <div class="palette-list" id="strongPalette"></div>
+        </div>
+
+        <div class="profile-group">
+          <div class="profile-heading"><span class="dot okay-dot"></span><h3>Good / softer</h3></div>
+          <div class="palette-list" id="okayPalette"></div>
+        </div>
+
+        <div class="profile-group">
+          <div class="profile-heading"><span class="dot caution-dot"></span><h3>Use with care</h3></div>
+          <div class="palette-list" id="cautionPalette"></div>
+        </div>
+
+        <div class="card profile-note">
+          <h3>About cream</h3>
+          <p>You can wear cream. It just gives you less contrast than wine/plum. When shopping, look first for <strong>soft white, pearl or oyster</strong> rather than yellow or vanilla cream.</p>
+        </div>
+
+        <div class="card backup-card">
+          <h3>Backup</h3>
+          <p>Your wardrobe is saved locally on this device. Export a backup before changing phones or clearing Safari data.</p>
+          <div class="button-row">
+            <button class="secondary" id="exportBtn">Export wardrobe</button>
+            <label class="secondary file-label">Import backup<input type="file" id="importInput" accept=".json,application/json"></label>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <nav class="tabbar" aria-label="Main navigation">
+      <button class="tab active" data-view="homeView"><span>⌂</span><small>Home</small></button>
+      <button class="tab" data-view="wardrobeView"><span>▦</span><small>Wardrobe</small></button>
+      <button class="tab" data-view="shopView"><span>◉</span><small>Shop Check</small></button>
+      <button class="tab" data-view="profileView"><span>✦</span><small>Colours</small></button>
+    </nav>
+  </div>
+
+  <dialog id="itemDialog">
+    <form method="dialog" id="itemForm">
+      <div class="dialog-head">
+        <div>
+          <div class="eyebrow">WARDROBE ITEM</div>
+          <h2 id="dialogTitle">Add item</h2>
+        </div>
+        <button class="icon-button" value="cancel" type="button" id="closeDialogBtn">×</button>
+      </div>
+
+      <input type="hidden" id="itemId" />
+      <label>Photo
+        <input type="file" id="itemPhoto" accept="image/*" capture="environment" />
+      </label>
+      <img id="itemPreview" class="item-preview" alt="" hidden />
+
+      <div class="two-col">
+        <label>Name
+          <input id="itemName" required placeholder="e.g. Wine lace blouse" />
+        </label>
+        <label>Category
+          <select id="itemCategory" required>
+            <option>Tops</option><option>Shirts</option><option>Knitwear</option><option>Jackets</option>
+            <option>Dresses</option><option>Pants</option><option>Skirts</option><option>Shoes</option>
+            <option>Accessories</option><option>Other</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="two-col">
+        <label>Colour family
+          <select id="itemColour">
+            <option>Wine / Burgundy</option><option>Berry / Raspberry</option><option>Plum / Aubergine</option>
+            <option>Cobalt / Royal Blue</option><option>Navy</option><option>Cool Teal</option>
+            <option>Emerald</option><option>Charcoal</option><option>Slate Grey</option>
+            <option>Cool Pink</option><option>Icy Blue</option><option>Soft White / Oyster</option>
+            <option>Cream / Ivory</option><option>Black</option><option>Warm Beige / Camel</option>
+            <option>Peach / Orange</option><option>Mustard</option><option>Rust</option><option>Other</option>
+          </select>
+        </label>
+        <label>Brand / shop
+          <input id="itemBrand" placeholder="Optional" />
+        </label>
+      </div>
+
+      <label>Notes
+        <textarea id="itemNotes" rows="3" placeholder="Fit, fabric, what it works with…"></textarea>
+      </label>
+
+      <label class="check-row">
+        <input type="checkbox" id="itemFavourite" /> Favourite
+      </label>
+
+      <div class="dialog-actions">
+        <button type="button" class="danger ghost" id="deleteItemBtn" hidden>Delete</button>
+        <div class="spacer"></div>
+        <button type="button" class="secondary" id="cancelItemBtn">Cancel</button>
+        <button type="submit" class="primary">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
